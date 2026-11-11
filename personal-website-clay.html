@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>李梓萌</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --canvas: #F8F7FB;
+            --fg: #2D2A35;
+            --muted: #6B6775;
+            --accent: #8B5CF6;
+            --accent-soft: rgba(139, 92, 246, 0.12);
+            --accent-alt: #EC4899;
+            --accent-alt-soft: rgba(236, 72, 153, 0.12);
+            --accent-blue: #38BDF8;
+            --accent-blue-soft: rgba(56, 189, 248, 0.12);
+            --accent-green: #34D399;
+            --accent-green-soft: rgba(52, 211, 153, 0.12);
+            --accent-amber: #FBBF24;
+            --accent-amber-soft: rgba(251, 191, 36, 0.12);
+        }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--canvas);
+            color: var(--fg);
+            overflow-x: hidden;
+            line-height: 1.625;
+        }
+        /* Background blobs */
+        .blobs {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .blob {
+            position: absolute;
+            height: 60vh;
+            width: 60vh;
+            border-radius: 9999px;
+            filter: blur(3xl);
+            filter: blur(48px);
+            animation: clay-float 8s ease-in-out infinite;
+        }
+        .blob-1 {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(56, 189, 248, 0.08));
+            top: -10%;
+            left: -10%;
+        }
+        .blob-2 {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.08));
+            top: 20%;
+            right: -10%;
+            animation-name: clay-float-delayed;
+            animation-delay: 2000ms;
+        }
+        .blob-3 {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(56, 189, 248, 0.1));
+            bottom: -10%;
+            left: 30%;
+            animation-name: clay-float-delayed;
+            animation-delay: 4000ms;
+        }
+        @keyframes clay-float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        @keyframes clay-float-delayed {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(-2deg); }
+        }
+        /* Navigation */
+        nav {
+            max-width: 1200px;
+            margin: 1.5rem auto 0;
+            padding: 0 1.5rem;
+        }
+        .nav-inner {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow:
+                16px 16px 32px rgba(160, 150, 180, 0.15),
+                -10px -10px 24px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--fg);
+            font-weight: 700;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        .logo {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 40%, var(--accent-alt) 75%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-cta {
+            background: linear-gradient(135deg, #A78BFA, var(--accent), var(--accent-alt));
+            background-size: 200% 200%;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.75rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            box-shadow:
+                12px 12px 24px rgba(139, 92, 246, 0.25),
+                -8px -8px 16px rgba(255, 255, 255, 0.5),
+                inset 4px 4px 8px rgba(255, 255, 255, 0.35),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .nav-cta:hover {
+            transform: translateY(-4px);
+            background-position: 100% 50%;
+            box-shadow:
+                16px 16px 32px rgba(139, 92, 246, 0.35),
+                -10px -10px 24px rgba(255, 255, 255, 0.5),
+                inset 4px 4px 8px rgba(255, 255, 255, 0.35),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.08);
+        }
+        .nav-cta:active {
+            transform: scale(0.92);
+            box-shadow:
+                inset 10px 10px 20px rgba(217, 212, 227, 1),
+                inset -10px -10px 20px rgba(255, 255, 255, 1);
+        }
+        /* Main container */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 6rem;
+        }
+        section {
+            padding: 4rem 0;
+        }
+        /* Hero */
+        .hero {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            min-height: 70vh;
+        }
+        .hero-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title .gradient {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-alt) 50%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-text {
+            font-size: 1.125rem;
+            color: var(--muted);
+            max-width: 480px;
+            margin-bottom: 2rem;
+        }
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        .tag {
+            background: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            box-shadow:
+                12px 12px 24px rgba(160, 150, 180, 0.15),
+                -8px -8px 16px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #A78BFA, var(--accent), var(--accent-alt));
+            background-size: 200% 200%;
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2.5rem;
+            border-radius: 20px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            box-shadow:
+                12px 12px 24px rgba(139, 92, 246, 0.25),
+                -8px -8px 16px rgba(255, 255, 255, 0.5),
+                inset 4px 4px 8px rgba(255, 255, 255, 0.35),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            background-position: 100% 50%;
+            box-shadow:
+                16px 16px 32px rgba(139, 92, 246, 0.35),
+                -10px -10px 24px rgba(255, 255, 255, 0.5),
+                inset 4px 4px 8px rgba(255, 255, 255, 0.35),
+                inset -4px -4px 8px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary:active {
+            transform: scale(0.92);
+            box-shadow:
+                inset 10px 10px 20px rgba(217, 212, 227, 1),
+                inset -10px -10px 20px rgba(255, 255, 255, 1);
+        }
+        .btn-secondary {
+            background: white;
+            color: var(--fg);
+            text-decoration: none;
+            padding: 1rem 2.5rem;
+            border-radius: 20px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            box-shadow:
+                12px 12px 24px rgba(160, 150, 180, 0.15),
+                -8px -8px 16px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                16px 16px 32px rgba(160, 150, 180, 0.2),
+                -10px -10px 24px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .btn-secondary:active {
+            transform: scale(0.92);
+            box-shadow:
+                inset 10px 10px 20px rgba(217, 212, 227, 1),
+                inset -10px -10px 20px rgba(255, 255, 255, 1);
+        }
+        .hero-visual {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 3rem;
+            box-shadow:
+                16px 16px 32px rgba(160, 150, 180, 0.15),
+                -10px -10px 24px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .hero-visual-inner {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border-radius: 48px;
+            padding: 3rem;
+            text-align: center;
+        }
+        .hero-visual-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: clay-breathe 6s ease-in-out infinite;
+        }
+        @keyframes clay-breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .hero-visual-text {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--accent);
+        }
+        /* Section header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+        }
+        /* Cards grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow:
+                16px 16px 32px rgba(160, 150, 180, 0.15),
+                -10px -10px 24px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+            transition: all 0.5s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow:
+                20px 20px 40px rgba(160, 150, 180, 0.2),
+                -12px -12px 28px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-icon.blue {
+            background: linear-gradient(135deg, #60A5FA, #2563EB);
+        }
+        .card-icon.purple {
+            background: linear-gradient(135deg, #A78BFA, #7C3AED);
+        }
+        .card-icon.pink {
+            background: linear-gradient(135deg, #F472B6, #DB2777);
+        }
+        .card-icon.green {
+            background: linear-gradient(135deg, #34D399, #10B981);
+        }
+        .card-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .card-text {
+            color: var(--muted);
+            font-size: 0.9375rem;
+        }
+        .card-text ul {
+            margin-top: 1rem;
+            padding-left: 1.25rem;
+        }
+        .card-text ul li {
+            margin-bottom: 0.5rem;
+        }
+        /* Projects */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .project-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 2.5rem;
+            box-shadow:
+                16px 16px 32px rgba(160, 150, 180, 0.15),
+                -10px -10px 24px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+            transition: all 0.5s ease;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow:
+                20px 20px 40px rgba(160, 150, 180, 0.2),
+                -12px -12px 28px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .project-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .project-tag {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent);
+            padding: 0.375rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .project-desc {
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+        .project-data {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .data-point {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1.5rem;
+            border-radius: 24px;
+            text-align: center;
+        }
+        .data-number {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+        .data-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        /* Contact */
+        .contact-section {
+            text-align: center;
+        }
+        .contact-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            margin-bottom: 1.5rem;
+        }
+        .contact-text {
+            color: var(--muted);
+            font-size: 1.0625rem;
+            max-width: 560px;
+            margin: 0 auto 2.5rem;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 640px;
+            margin: 0 auto 2.5rem;
+        }
+        .contact-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 2rem;
+            box-shadow:
+                16px 16px 32px rgba(160, 150, 180, 0.15),
+                -10px -10px 24px rgba(255, 255, 255, 0.9),
+                inset 6px 6px 12px rgba(139, 92, 246, 0.03),
+                inset -6px -6px 12px rgba(255, 255, 255, 1);
+        }
+        .contact-item-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .contact-item-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.25rem;
+        }
+        .contact-item-value {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.0625rem;
+        }
+        /* Footer */
+        footer {
+            text-align: center;
+            padding-bottom: 4rem;
+        }
+        footer p {
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .project-card {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .nav-inner {
+                border-radius: 32px;
+            }
+            .grid-3, .grid-2, .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .project-data {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background blobs -->
+    <div class="blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <div class="logo">ZIMENG</div>
+            <div class="nav-links">
+                <a href="#about">背景</a>
+                <a href="#ai">工具</a>
+                <a href="#projects">项目</a>
+                <a href="#thinking">思考</a>
+            </div>
+            <a href="#contact" class="nav-cta">联系我</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero" style="padding-top: 4rem;">
+            <div>
+                <h1 class="hero-title">
+                    从画图建模的<br>
+                    <span class="gradient">景观设计师</span><br>
+                    到运营增长
+                </h1>
+                <p class="hero-text">
+                    从风景园林设计到用户、品牌、销售运营，用AI工具把复杂的事情变简单，用数据驱动增长。
+                </p>
+                <div class="hero-tags">
+                    <span class="tag">系统思维</span>
+                    <span class="tag">数据驱动</span>
+                    <span class="tag">AI工具</span>
+                    <span class="tag">快速学习</span>
+                </div>
+                <div class="hero-btns">
+                    <a href="#projects" class="btn-primary">
+                        查看项目
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#" onclick="downloadResume()" class="btn-secondary">下载简历</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-visual-inner">
+                    <div class="hero-visual-icon">🌳📊</div>
+                    <p class="hero-visual-text">跨学科 · 数据驱动 · AI赋能</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about">
+            <div class="section-header">
+                <p class="section-label">01 / 背景</p>
+                <h2 class="section-title">我的独特性</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon green">🌳</div>
+                    <h3 class="card-title">专业背景</h3>
+                    <div class="card-text">
+                        <p>风景园林是一个从「立项调研-方案设计-工程落地」的复杂全链路过程，这个专业教会我：</p>
+                        <ul>
+                            <li>用户调研：先理解使用人群的真实需求</li>
+                            <li>环境分析：根据场地条件找到核心切入点</li>
+                            <li>迭代优化：一个方案改十几版是常态</li>
+                            <li>工程落地：不仅要有创意，还要考虑实际交付</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon purple">💼</div>
+                    <h3 class="card-title">四段实习</h3>
+                    <div class="card-text">
+                        <p>从品牌-互联网，每一段实习都在补不同的能力模块：</p>
+                        <ul>
+                            <li>数据敏感度：每天看报表，习惯用数据定位问题</li>
+                            <li>跨部门协作：对接过不同部门，学会用不同语言沟通</li>
+                            <li>项目管理：从零推过项目，知道怎么拆目标、控节奏</li>
+                            <li>快速学习：进入一个新领域，最快一周就能上手</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon blue">🤖</div>
+                    <h3 class="card-title">AI工具</h3>
+                    <div class="card-text">
+                        <p>我喜欢探索AI工具，不只是用，而是思考「AI能解决什么真实痛点」：</p>
+                        <ul>
+                            <li>效率提效：利用AI辅助Python脚本，搭建自动化工作流把日报从一小时缩短到一分钟</li>
+                            <li>内容生产：用AI辅助文案创作</li>
+                            <li>数据分析：用AI快速抓取下钻各团队红线话术，然后通报</li>
+                            <li>持续探索：现在在玩AI Agent，想做更多自动化工作流</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Toolbox -->
+        <section id="ai">
+            <div class="section-header">
+                <p class="section-label">02 / 工具</p>
+                <h2 class="section-title">我的AI工具箱</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon pink">💬</div>
+                    <h3 class="card-title">Chat类AI</h3>
+                    <div class="card-text">
+                        <p style="font-family: 'Nunito', sans-serif; font-weight: 700; margin-bottom: 0.5rem;">Claude · 豆包</p>
+                        <p>文案撰写、红线话术检查、数据解读</p>
+                        <p style="margin-top: 1rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent);">常用：整理录音、抓取下钻各团队红线话术、写周报</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon blue">📊</div>
+                    <h3 class="card-title">数据工具</h3>
+                    <div class="card-text">
+                        <p style="font-family: 'Nunito', sans-serif; font-weight: 700; margin-bottom: 0.5rem;">MySQL · SPSS · R语言</p>
+                        <p>数据查询、统计分析、可视化出图</p>
+                        <p style="margin-top: 1rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent);">常用：查数据、做统计、AI辅助R语言出图</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon green">🎨</div>
+                    <h3 class="card-title">AI视觉出图</h3>
+                    <div class="card-text">
+                        <p style="font-family: 'Nunito', sans-serif; font-weight: 700; margin-bottom: 0.5rem;">Midjourney · Canva AI</p>
+                        <p>活动海报、内容配图</p>
+                        <p style="margin-top: 1rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent);">常用：活动宣传图、PPT配图</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section id="projects">
+            <div class="section-header">
+                <p class="section-label">03 / 项目</p>
+                <h2 class="section-title">数据说话</h2>
+            </div>
+            <div class="project-list">
+                <div class="project-card">
+                    <div>
+                        <h3 class="project-title">教辅转品项目</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">项目管理</span>
+                            <span class="project-tag">跨部门协作</span>
+                            <span class="project-tag">策略验证</span>
+                        </div>
+                        <p class="project-desc">核心目标为压降CTA客诉、改善用户体验，完成教辅全量上线。</p>
+                        <div class="project-data" style="grid-template-columns: 1.5fr 1fr 1fr;">
+                            <div class="data-point">
+                                <div class="data-number">3.64‰ → 0.7‰</div>
+                                <div class="data-label">CTA客诉率</div>
+                            </div>
+                            <div class="data-point">
+                                <div class="data-number">90%+</div>
+                                <div class="data-label">自有效率</div>
+                            </div>
+                            <div class="data-point">
+                                <div class="data-number">125%+</div>
+                                <div class="data-label">外包效率</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card-text">
+                            <h4 style="font-family: 'Nunito', sans-serif; font-weight: 800; margin-bottom: 0.5rem;">项目执行</h4>
+                            <ul>
+                                <li>先在辅导侧做了小范围的SOP测试，跑通流程</li>
+                                <li>然后推自有团队全切，约60人规模，验证效果</li>
+                                <li>接着做外包测试，没问题就推全量</li>
+                                <li>这中间和教研、供应链一起配合，调整为纸质版实物讲义</li>
+                                <li>强化讲义和课程的内容绑定，为后端辅导课邀约提供运营抓手</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div>
+                        <h3 class="project-title">猿力会员召回</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">会员召回</span>
+                            <span class="project-tag">数据监控</span>
+                        </div>
+                        <p class="project-desc">参与十万+级品牌会员池电话召回，做话术打磨、时段测试，从零搭建数据监控体系。</p>
+                        <div class="project-data">
+                            <div class="data-point">
+                                <div class="data-number">+375%</div>
+                                <div class="data-label">小学转化率</div>
+                            </div>
+                            <div class="data-point">
+                                <div class="data-number">+796%</div>
+                                <div class="data-label">初中转化率</div>
+                            </div>
+                            <div class="data-point">
+                                <div class="data-number">5.2→6.1</div>
+                                <div class="data-label">服务商单产</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card-text">
+                            <h4 style="font-family: 'Nunito', sans-serif; font-weight: 800; margin-bottom: 0.5rem;">具体动作</h4>
+                            <ul>
+                                <li>参与话术打磨、时段测试</li>
+                                <li>基于三维分层管理十万+级会员池，将有限资源集中在高潜力会员</li>
+                                <li>从零搭数据监控体系（早/晚报+周报），监控核心指标（如转化率、ROI、接通率等）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div>
+                        <h3 class="project-title">蔚来品牌运营</h3>
+                        <div class="project-tags">
+                            <span class="project-tag">品牌活动</span>
+                            <span class="project-tag">私域社群</span>
+                        </div>
+                        <p class="project-desc">围绕私域社群做触达，主导制定活动SOP，保障活动落地。</p>
+                        <div class="project-data">
+                            <div class="data-point">
+                                <div class="data-number">24+</div>
+                                <div class="data-label">活动场数</div>
+                            </div>
+                            <div class="data-point">
+                                <div class="data-number">全程零事故</div>
+                                <div class="data-label">活动执行</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card-text">
+                            <h4 style="font-family: 'Nunito', sans-serif; font-weight: 800; margin-bottom: 0.5rem;">具体动作</h4>
+                            <ul>
+                                <li>主导制定品牌活动执行SOP</li>
+                                <li>负责核心社群触达</li>
+                                <li>活动现场执行与复盘</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Thinking -->
+        <section id="thinking">
+            <div class="section-header">
+                <p class="section-label">04 / 思考</p>
+                <h2 class="section-title">AI + 运营</h2>
+            </div>
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="card-title">📝 如何用AI做红线话术检查</h3>
+                    <div class="card-text">
+                        我的方法是：设置销售通话记录看板数据，利用AI自动抓取红线关键词，下钻到各个大组检查，整理问题清单后进行通报，确保整体合规。
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">📊 从风景园林到运营的思维迁移</h3>
+                    <div class="card-text">
+                        景观设计的「用户体验-方案设计-落地执行」思维，和运营的「用户洞察-方案设计-数据验证」思维是相通的。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="contact-section">
+            <h2 class="contact-title">期待您的联系</h2>
+            <p class="contact-text">
+                我非常期待能够加入您的团队，贡献我的跨学科思维、数据驱动能力和AI工具使用经验！如果您觉得我的背景和能力符合您的需求，希望能得到面试机会。
+            </p>
+            <div class="contact-grid">
+                <div class="contact-item" onclick="toggleContact(this)" style="cursor: pointer;">
+                    <div class="contact-item-icon">📱</div>
+                    <div class="contact-item-label">电话</div>
+                    <div class="contact-item-value">
+                        <span class="contact-hidden">点击显示 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></span>
+                        <span class="contact-revealed" style="display: none;">13190409141 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.6;"><path d="M19 12l-7-7-7 7"/></svg></span>
+                    </div>
+                </div>
+                <div class="contact-item" onclick="toggleContact(this)" style="cursor: pointer;">
+                    <div class="contact-item-icon">📧</div>
+                    <div class="contact-item-label">邮箱</div>
+                    <div class="contact-item-value">
+                        <span class="contact-hidden">点击显示 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></span>
+                        <span class="contact-revealed" style="display: none;">3115675403@qq.com <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.6;"><path d="M19 12l-7-7-7 7"/></svg></span>
+                    </div>
+                </div>
+                <div class="contact-item" onclick="toggleContact(this)" style="cursor: pointer;">
+                    <div class="contact-item-icon">💬</div>
+                    <div class="contact-item-label">微信</div>
+                    <div class="contact-item-value">
+                        <span class="contact-hidden">点击显示 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline-block; vertical-align: middle; margin-left: 4px;"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></span>
+                        <span class="contact-revealed" style="display: none;">同手机号 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline-block; vertical-align: middle; margin-left: 4px; opacity: 0.6;"><path d="M19 12l-7-7-7 7"/></svg></span>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="downloadResume()" class="btn-primary">下载简历</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 李梓萌 · 用AI辅助，让自己更有竞争力</p>
+    </footer>
+
+    <script>
+        function downloadResume() {
+            window.open('李梓萌个人简历-27届.pdf', '_blank');
+        }
+        function toggleContact(element) {
+            const hidden = element.querySelector('.contact-hidden');
+            const revealed = element.querySelector('.contact-revealed');
+            if (hidden && revealed) {
+                if (hidden.style.display !== 'none') {
+                    hidden.style.display = 'none';
+                    revealed.style.display = 'inline';
+                } else {
+                    hidden.style.display = 'inline';
+                    revealed.style.display = 'none';
+                }
+            }
+        }
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
